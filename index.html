@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luciana Castillo - Moda Infantil</title>
+    <style>
+        :root {
+            --pantone-color: #D2B49C; /* Pantone 14-1213 TCX */
+            --text-color: #333333;
+            --white: #ffffff;
+        }
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--white);
+            color: var(--text-color);
+        }
+        header {
+            background-color: var(--pantone-color);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Ocultamos texto en header para priorizar el logo grande al centro */
+        .header-spacer {
+            width: 50px; 
+        }
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-menu li {
+            position: relative;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1.1rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--white);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            top: 100%;
+            left: -10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: normal;
+            font-size: 1rem;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .hero {
+            background-color: var(--pantone-color);
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+        .logo-container img {
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            /* Pequeña sombra para asegurar que las letras blancas resalten siempre */
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
+        }
+        h1 {
+            color: var(--white);
+            font-weight: 300;
+            letter-spacing: 3px;
+            font-size: 1.8rem;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            background-color: var(--white);
+            margin: 15% auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .modal-content h2 {
+            color: var(--pantone-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .modal-content button {
+            background-color: var(--pantone-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .modal-content button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-spacer"></div>
+        <ul class="nav-menu">
+            <li class="dropdown">
+                <a>Catálogos ▾</a>
+                <div class="dropdown-content">
+                    <a href="#">Colecciones</a>
+                </div>
+            </li>
+            <li>
+                <a onclick="openModal()">Administrador</a>
+            </li>
+        </ul>
+    </header>
+
+    <section class="hero">
+        <div class="logo-container">
+            <img src="logo rediseñado letras blancas sin fondo 2022.png" alt="Logo Luciana Castillo">
+        </div>
+        <h1>Luciana Castillo - Moda Infantil</h1>
+    </section>
+
+    <!-- Modal de Administrador -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Ingreso Administrador</h2>
+            <input type="email" id="email" placeholder="Correo electrónico">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button onclick="login()">Ingresar</button>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("adminModal");
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Cierra el modal si se hace clic fuera de la caja blanca
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function login() {
+            var email = document.getElementById("email").value;
+            var pass = document.getElementById("password").value;
+            if(email && pass) {
+                alert("Validando credenciales... (Próximamente se conectará a Firebase)");
+            } else {
+                alert("Por favor, ingrese correo y contraseña.");
+            }
+        }
+    </script>
+
+</body>
+</html>
