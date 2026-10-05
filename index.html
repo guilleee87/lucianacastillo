@@ -98,13 +98,25 @@
             height: auto;
             filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
         }
-        h1 {
+        /* Estilos del nuevo botón de Instagram */
+        .instagram-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
             color: var(--white);
-            font-weight: 300;
-            letter-spacing: 3px;
-            font-size: 1.8rem;
-            margin: 0;
-            text-transform: uppercase;
+            font-size: 1.2rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 10px 24px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .instagram-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
         /* Modal Styles */
         .modal {
@@ -170,13 +182,6 @@
         .modal-content button:hover {
             opacity: 0.9;
         }
-        .social-icon {
-            margin-left: 1rem;
-        }
-        .social-icon svg {
-            width: 24px;
-            height: 24px;
-        }
     </style>
 </head>
 <body>
@@ -193,16 +198,6 @@
             <li>
                 <a onclick="openModal()">Administrador</a>
             </li>
-            <li class="social-icon">
-                <!-- Cambia el enlace de href por la URL real de tu Instagram -->
-                <a href="https://www.instagram.com/lucianacastillomodainfantil" target="_blank" rel="noopener noreferrer" title="Síguenos en Instagram">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-            </li>
         </ul>
     </header>
 
@@ -210,7 +205,26 @@
         <div class="logo-container">
             <img src="logo rediseñado letras blancas sin fondo 2022.png" alt="Logo Luciana Castillo">
         </div>
-        <h1>Luciana Castillo - Moda Infantil</h1>
+        
+        <!-- Botón de Instagram debajo del logo -->
+        <a href="https://www.instagram.com/lucianacastillo.moda" target="_blank" rel="noopener noreferrer" class="instagram-btn">
+            <svg viewBox="0 0 24 24" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="ig-gradient" x1="0.2" y1="0.8" x2="0.8" y2="0.2">
+                        <stop offset="0%" stop-color="#f09433" />
+                        <stop offset="25%" stop-color="#e6683c" />
+                        <stop offset="50%" stop-color="#dc2743" />
+                        <stop offset="75%" stop-color="#cc2366" />
+                        <stop offset="100%" stop-color="#bc1888" />
+                    </linearGradient>
+                </defs>
+                <rect width="24" height="24" rx="6" fill="url(#ig-gradient)"/>
+                <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="white" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3.5" fill="none" stroke="white" stroke-width="2"/>
+                <circle cx="16.5" cy="7.5" r="1.2" fill="white"/>
+            </svg>
+            @lucianacastillo.moda
+        </a>
     </section>
 
     <!-- Modal de Administrador -->
