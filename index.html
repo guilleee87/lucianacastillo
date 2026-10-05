@@ -24,7 +24,6 @@
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        /* Ocultamos texto en header para priorizar el logo grande al centro */
         .header-spacer {
             width: 50px; 
         }
@@ -34,9 +33,12 @@
             padding: 0;
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
         .nav-menu li {
             position: relative;
+            display: flex;
+            align-items: center;
         }
         .nav-menu a {
             text-decoration: none;
@@ -45,6 +47,11 @@
             font-size: 1.1rem;
             cursor: pointer;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu a:hover {
+            opacity: 0.8;
         }
         .dropdown-content {
             display: none;
@@ -89,7 +96,6 @@
             max-width: 500px;
             width: 100%;
             height: auto;
-            /* Pequeña sombra para asegurar que las letras blancas resalten siempre */
             filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
         }
         h1 {
@@ -164,6 +170,13 @@
         .modal-content button:hover {
             opacity: 0.9;
         }
+        .social-icon {
+            margin-left: 1rem;
+        }
+        .social-icon svg {
+            width: 24px;
+            height: 24px;
+        }
     </style>
 </head>
 <body>
@@ -179,6 +192,16 @@
             </li>
             <li>
                 <a onclick="openModal()">Administrador</a>
+            </li>
+            <li class="social-icon">
+                <!-- Cambia el enlace de href por la URL real de tu Instagram -->
+                <a href="https://www.instagram.com/lucianacastillomodainfantil" target="_blank" rel="noopener noreferrer" title="Síguenos en Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
             </li>
         </ul>
     </header>
