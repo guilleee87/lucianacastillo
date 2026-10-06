@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luciana Castillo - Moda Infantil</title>
+    
+    <!-- Librería para leer archivos Excel (.xlsx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         :root {
             --pantone-color: #C5B4A6; 
@@ -126,7 +130,7 @@
         .admin-header h2 { margin: 0; font-size: 2rem; color: var(--text-color); font-weight: 300; text-transform: uppercase; letter-spacing: 2px;}
         .logout-btn { background-color: #ff4d4d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
-        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .action-card { background: var(--bg-light); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between;}
         .action-card h3 { color: var(--pantone-color); margin-top: 0; font-size: 1.5rem; }
         .action-card p { font-size: 0.9rem; color: #666; margin-bottom: 1.5rem; }
@@ -138,6 +142,14 @@
         .btn-upload { background-color: var(--pantone-color); color: white; padding: 12px 20px; border-radius: 4px; display: block; font-weight: bold; cursor: pointer; transition: opacity 0.2s; border: none; text-decoration: none; text-align: center; }
         .btn-upload:hover { opacity: 0.9; }
         .action-card textarea { width: 100%; height: 100px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 1rem; font-family: inherit; resize: vertical; }
+
+        /* Estilos para los Resultados Matemáticos generados */
+        .result-box { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-top: 15px; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .field-row { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
+        .field-row label { width: 140px; font-size: 0.8rem; color: #555; font-weight: bold; line-height: 1.2;}
+        .field-row input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; background-color: #f5f5f5; color: #333; font-size: 0.9rem; outline: none; }
+        .copy-btn { background-color: #e0e0e0; border: 1px solid #ccc; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #333; transition: all 0.2s; }
+        .copy-btn:hover { background-color: #d0d0d0; }
 
         /* Modal Styles */
         .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
@@ -152,6 +164,8 @@
             .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; }
             .nav-menu { gap: 1rem; }
             .nav-menu a { font-size: 0.9rem; }
+            .field-row { flex-wrap: wrap; }
+            .field-row label { width: 100%; margin-bottom: -5px; }
         }
     </style>
 </head>
@@ -234,6 +248,8 @@
                     </div>
                     <button class="btn-upload" style="width: 100%; background-color: #333;" onclick="procesarBabyology()">Procesar Datos</button>
                 </div>
+                <!-- Contenedor donde aparecerán los resultados matemáticos -->
+                <div id="babyology-results" style="display: none; width: 100%;"></div>
             </div>
 
             <!-- 2. Rikury -->
@@ -333,7 +349,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE FIREBASE CON MODO DE DIAGNÓSTICO -->
+    <!-- SCRIPT DE FIREBASE Y LÓGICA EXCEL -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -396,10 +412,166 @@
             });
         }
 
+        // FUNCIONES DE COPIADO AL PORTAPAPELES
+        window.copyText = function(elementId, btnElement) {
+            var inputElement = document.getElementById(elementId);
+            navigator.clipboard.writeText(inputElement.value).then(function() {
+                var originalText = btnElement.innerText;
+                btnElement.innerText = "¡Copiado!";
+                btnElement.style.backgroundColor = "var(--whatsapp-green)";
+                btnElement.style.color = "white";
+                setTimeout(function(){
+                    btnElement.innerText = originalText;
+                    btnElement.style.backgroundColor = "#e0e0e0";
+                    btnElement.style.color = "#333";
+                }, 1500);
+            });
+        }
+
+        // CEREBRO DE BABYOLOGY (Procesamiento de Excel)
         window.procesarBabyology = function() {
             var fileInput = document.getElementById('babyology-file');
-            if(fileInput.files.length > 0) { alert("Has subido el Excel: " + fileInput.files[0].name); } 
-            else { alert("Por favor, selecciona un archivo Excel primero."); }
+            var resultsContainer = document.getElementById('babyology-results');
+            
+            if(fileInput.files.length === 0) {
+                alert("Por favor, selecciona un archivo Excel primero.");
+                return;
+            }
+            
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, {type: 'array'});
+                    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    // Leer como tabla
+                    var jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: ""});
+                    
+                    // Buscar la fila donde están los títulos (Producto, Cantidad, Total)
+                    let headerRowIdx = -1;
+                    for(let i=0; i<jsonData.length; i++) {
+                        let rowStr = jsonData[i].join(" ").toLowerCase();
+                        if(rowStr.includes("producto") && rowStr.includes("cantidad") && rowStr.includes("total")) {
+                            headerRowIdx = i;
+                            break;
+                        }
+                    }
+                    
+                    if(headerRowIdx === -1) {
+                        alert("No pude encontrar las columnas 'Producto', 'Cantidad' y 'Total' en tu Excel. Revisa el formato.");
+                        return;
+                    }
+                    
+                    let headers = jsonData[headerRowIdx].map(h => String(h).trim().toLowerCase());
+                    let prodIdx = headers.findIndex(h => h.includes("producto"));
+                    let cantIdx = headers.findIndex(h => h.includes("cantidad"));
+                    let totalIdx = headers.findIndex(h => h === "total" || (h.includes("total") && !h.includes("sub")));
+                    
+                    if(prodIdx === -1 || cantIdx === -1 || totalIdx === -1) {
+                        alert("Faltan las columnas necesarias. Revisa que existan Producto, Cantidad y Total.");
+                        return;
+                    }
+                    
+                    let grouped = {};
+                    let grandTotal = 0;
+                    
+                    // Procesar fila por fila debajo del título
+                    for(let i = headerRowIdx + 1; i < jsonData.length; i++) {
+                        let row = jsonData[i];
+                        let prodName = String(row[prodIdx] || "").trim();
+                        
+                        // Omitir filas vacías o subtotales
+                        if(!prodName || prodName.toLowerCase().includes("total") || prodName.toLowerCase().includes("pagar")) {
+                            continue;
+                        }
+                        
+                        let cant = parseFloat(row[cantIdx]) || 0;
+                        let total = parseFloat(row[totalIdx]) || 0;
+                        
+                        if(cant > 0) {
+                            if(!grouped[prodName]) {
+                                grouped[prodName] = { cantidad: 0, total: 0 };
+                            }
+                            grouped[prodName].cantidad += cant;
+                            grouped[prodName].total += total;
+                        }
+                    }
+                    
+                    // Suma general de todos los totales
+                    grandTotal = Object.values(grouped).reduce((sum, item) => sum + item.total, 0);
+                    
+                    // Generar el diseño de cajas (HTML)
+                    let html = "";
+                    let counter = 1;
+                    
+                    for(let prod in grouped) {
+                        let g = grouped[prod];
+                        // Precio unitario = Total del grupo / Cantidad del grupo. Luego dividir entre 1.18
+                        let unitPrice = g.total / g.cantidad;
+                        let unitPriceNoIgv = unitPrice / 1.18;
+                        
+                        html += `
+                        <div class="result-box">
+                            <h4 style="margin-top:0; color:var(--pantone-color); border-bottom:1px solid #ddd; padding-bottom:5px;">${prod}</h4>
+                            
+                            <div class="field-row">
+                                <label>Producto:</label>
+                                <input type="text" value="${prod}" readonly id="prod_${counter}">
+                                <button class="copy-btn" onclick="copyText('prod_${counter}', this)">Copiar</button>
+                            </div>
+                            
+                            <div class="field-row">
+                                <label>Monto Total:</label>
+                                <input type="text" value="${g.total.toFixed(2)}" readonly id="tot_${counter}">
+                                <button class="copy-btn" onclick="copyText('tot_${counter}', this)">Copiar</button>
+                            </div>
+                            
+                            <div class="field-row">
+                                <label>Precio x1 (sin IGV):</label>
+                                <input type="text" value="${unitPriceNoIgv.toFixed(2)}" readonly id="uni_${counter}">
+                                <button class="copy-btn" onclick="copyText('uni_${counter}', this)">Copiar</button>
+                            </div>
+                        </div>`;
+                        counter++;
+                    }
+                    
+                    let grandTotalNoIgv = grandTotal / 1.18;
+                    
+                    // Caja Fija con RUC y Totales Generales
+                    html += `
+                    <div class="result-box" style="background:#efefef; border: 2px solid #ccc;">
+                        <h4 style="margin-top:0; color:#333; border-bottom:1px solid #ccc; padding-bottom:5px;">RESUMEN FINAL</h4>
+                        
+                        <div class="field-row">
+                            <label>Total a Pagar:</label>
+                            <input type="text" value="${grandTotal.toFixed(2)}" readonly id="g_total">
+                            <button class="copy-btn" onclick="copyText('g_total', this)">Copiar</button>
+                        </div>
+                        
+                        <div class="field-row">
+                            <label>Total / 1.18:</label>
+                            <input type="text" value="${grandTotalNoIgv.toFixed(2)}" readonly id="g_total_igv">
+                            <button class="copy-btn" onclick="copyText('g_total_igv', this)">Copiar</button>
+                        </div>
+                        
+                        <div class="field-row" style="margin-top: 15px;">
+                            <label style="color:var(--pantone-color);">RUC:</label>
+                            <input type="text" value="20601396611" readonly id="ruc_num" style="font-weight:bold;">
+                            <button class="copy-btn" onclick="copyText('ruc_num', this)">Copiar</button>
+                        </div>
+                    </div>`;
+                    
+                    resultsContainer.innerHTML = html;
+                    resultsContainer.style.display = "block";
+                    
+                } catch(err) {
+                    console.error(err);
+                    alert("Ocurrió un error leyendo el Excel. Asegúrate de que tenga el formato de columnas correcto.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         window.procesarRikury = function() {
