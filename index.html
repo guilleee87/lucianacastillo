@@ -1,4 +1,339 @@
-<!-- SCRIPT DE FIREBASE CON MODO DE DIAGNÓSTICO -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luciana Castillo - Moda Infantil</title>
+    <style>
+        :root {
+            --pantone-color: #C5B4A6; 
+            --text-color: #333333;
+            --white: #ffffff;
+            --whatsapp-green: #25D366;
+            --bg-light: #f9f9f9;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--white);
+            color: var(--text-color);
+        }
+        header {
+            background-color: var(--pantone-color);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-spacer { width: 50px; }
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-menu li { position: relative; display: flex; align-items: center; }
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1.1rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu a:hover { opacity: 0.8; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--white);
+            min-width: 220px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 10;
+            top: 100%;
+            left: -10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            display: block;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .dropdown-content a:hover { background-color: #f1f1f1; }
+        .dropdown:hover .dropdown-content { display: block; }
+        
+        .hero {
+            background-color: var(--pantone-color);
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .logo-container { margin-bottom: 1.5rem; }
+        .logo-container img {
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
+        }
+        .instagram-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 10px 24px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .instagram-btn:hover { background-color: rgba(255, 255, 255, 0.25); transform: translateY(-2px); }
+        
+        .catalog-section { padding: 4rem 2rem; max-width: 1000px; margin: 0 auto; }
+        .catalog-section h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 300; }
+        .flipbook-container { width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); background-color: var(--bg-light); }
+        .flipbook-container iframe { width: 100%; height: 600px; border: none; display: block; }
+
+        .whatsapp-float {
+            position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px;
+            background-color: var(--whatsapp-green); color: #FFF; border-radius: 50px;
+            text-align: center; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); }
+
+        /* Estilos del Panel de Administrador */
+        #admin-panel { display: none; padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--pantone-color); padding-bottom: 1rem; margin-bottom: 3rem; }
+        .admin-header h2 { margin: 0; font-size: 2rem; color: var(--text-color); font-weight: 300; text-transform: uppercase; letter-spacing: 2px;}
+        .logout-btn { background-color: #ff4d4d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .action-card { background: var(--bg-light); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between;}
+        .action-card h3 { color: var(--pantone-color); margin-top: 0; font-size: 1.5rem; }
+        .action-card p { font-size: 0.9rem; color: #666; margin-bottom: 1.5rem; }
+        .action-card p b { color: #333; }
+        
+        /* Inputs de archivo y texto personalizados */
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; margin-bottom: 1rem;}
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
+        .btn-upload { background-color: var(--pantone-color); color: white; padding: 12px 20px; border-radius: 4px; display: block; font-weight: bold; cursor: pointer; transition: opacity 0.2s; border: none; text-decoration: none; text-align: center; }
+        .btn-upload:hover { opacity: 0.9; }
+        .action-card textarea { width: 100%; height: 100px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 1rem; font-family: inherit; resize: vertical; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: var(--white); margin: 15% auto; padding: 2.5rem; border-radius: 8px; width: 320px; text-align: center; position: relative; }
+        .close { color: #aaa; position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal-content h2 { color: var(--pantone-color); margin-top: 0; margin-bottom: 1.5rem; }
+        .modal-content input { width: 100%; box-sizing: border-box; padding: 12px; margin: 8px 0 16px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .modal-content button { background-color: var(--pantone-color); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .flipbook-container iframe { height: 450px; }
+            .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; }
+            .nav-menu { gap: 1rem; }
+            .nav-menu a { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA PRINCIPAL -->
+    <header id="main-header">
+        <div class="header-spacer"></div>
+        <ul class="nav-menu">
+            <li class="dropdown">
+                <a>Catálogos ▾</a>
+                <div class="dropdown-content">
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/phfe/', 'Vestidos')">Vestidos</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/VESTIDOS-CEREMONIALES/', 'Vestidos Ceremoniales')">Vestidos Ceremoniales</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/CONJUNTOS-MANGA-CORTA/', 'Conjuntos Manga corta')">Conjuntos Manga corta</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/CONJUNTO-MANGA-LARGA/', 'Conjuntos Manga Larga')">Conjuntos Manga Larga</a>
+                </div>
+            </li>
+            <li>
+                <a href="https://wa.me/51933895117?text=%C2%A1Hola!%20Estoy%20interesada%20en%20realizar%20una%20compra." target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 6px;" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                    WhatsApp
+                </a>
+            </li>
+            <li>
+                <a onclick="openModal()">Administrador</a>
+            </li>
+        </ul>
+    </header>
+
+    <!-- TIENDA PÚBLICA -->
+    <div id="storefront">
+        <section class="hero">
+            <div class="logo-container">
+                <img src="logo rediseñado letras blancas sin fondo 2022.png" alt="Logo Luciana Castillo">
+            </div>
+            <a href="https://www.instagram.com/lucianacastillo.moda" target="_blank" class="instagram-btn">
+                <svg viewBox="0 0 24 24" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="ig-gradient" x1="0.2" y1="0.8" x2="0.8" y2="0.2">
+                            <stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/><stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="24" height="24" rx="6" fill="url(#ig-gradient)"/><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="white" stroke-width="2"/><circle cx="16.5" cy="7.5" r="1.2" fill="white"/>
+                </svg>
+                @lucianacastillo.moda
+            </a>
+        </section>
+
+        <section id="colecciones" class="catalog-section">
+            <h2 id="catalog-title">Vestidos</h2>
+            <div class="flipbook-container">
+                <iframe id="catalog-frame" src="https://online.fliphtml5.com/lucianacastillomoda/phfe/" allowfullscreen="true"></iframe>
+            </div>
+        </section>
+
+        <a href="https://wa.me/51933895117?text=%C2%A1Hola!%20Estoy%20interesada%20en%20realizar%20una%20compra." class="whatsapp-float" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:35px; height:35px" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+    </div>
+
+    <!-- PANEL DE ADMINISTRADOR PRIVADO -->
+    <div id="admin-panel">
+        <div class="admin-header">
+            <h2>Acciones y Accesos</h2>
+            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+        </div>
+        
+        <div class="actions-grid">
+            <!-- 1. Babyology -->
+            <div class="action-card">
+                <div>
+                    <h3>Babyology</h3>
+                    <p>Sube tu archivo de Excel (.xlsx, .xls)</p>
+                </div>
+                <div>
+                    <div class="file-upload-wrapper">
+                        <button class="btn-upload">Elegir Archivo Excel</button>
+                        <input type="file" id="babyology-file" accept=".xlsx, .xls">
+                    </div>
+                    <button class="btn-upload" style="width: 100%; background-color: #333;" onclick="procesarBabyology()">Procesar Datos</button>
+                </div>
+            </div>
+
+            <!-- 2. Rikury -->
+            <div class="action-card">
+                <div>
+                    <h3>Rikury</h3>
+                    <p>Sube tu imagen (.jpg, .png)</p>
+                </div>
+                <div>
+                    <div class="file-upload-wrapper">
+                        <button class="btn-upload">Elegir Imagen</button>
+                        <input type="file" id="rikury-file" accept="image/png, image/jpeg">
+                    </div>
+                    <button class="btn-upload" style="width: 100%; background-color: #333;" onclick="procesarRikury()">Procesar Imagen</button>
+                </div>
+            </div>
+
+            <!-- 3. Boleta / Factura -->
+            <div class="action-card">
+                <div>
+                    <h3>Boleta / Factura</h3>
+                    <p>Ingresa los textos o datos requeridos</p>
+                </div>
+                <div>
+                    <textarea id="boleta-text" placeholder="Escribe o pega el texto aquí..."></textarea>
+                    <button class="btn-upload" style="width: 100%; background-color: #333;" onclick="procesarBoleta()">Generar Documento</button>
+                </div>
+            </div>
+
+            <!-- 4. FlipBook -->
+            <div class="action-card">
+                <div>
+                    <h3>Catálogo FlipBook</h3>
+                    <p>Enlace para subir catálogo.<br><b>Usuario:</b> guillermovsvl@gmail.com</p>
+                </div>
+                <a href="https://fliphtml5.com/dashboard/home?lang=es" target="_blank" class="btn-upload" style="background-color: #333;">Ir a FlipBook</a>
+            </div>
+
+            <!-- 5. Linktree -->
+            <div class="action-card">
+                <div>
+                    <h3>Linktree</h3>
+                    <p>Gestor de enlaces.<br><b>Usuario:</b> lucianacastillo.modainfantil@gmail.com</p>
+                </div>
+                <a href="https://linktr.ee/admin" target="_blank" class="btn-upload" style="background-color: #333;">Ir a Linktree</a>
+            </div>
+
+            <!-- 6. Firebase -->
+            <div class="action-card">
+                <div>
+                    <h3>Firebase</h3>
+                    <p>Encriptación de contraseña Google.<br><b>Usuario:</b> guillermovsvl@gmail.com</p>
+                </div>
+                <a href="https://console.firebase.google.com/u/0/" target="_blank" class="btn-upload" style="background-color: #333;">Ir a Firebase</a>
+            </div>
+
+            <!-- 7. GitHub -->
+            <div class="action-card">
+                <div>
+                    <h3>GitHub</h3>
+                    <p>Repositorio de código.<br><b>Usuario:</b> guilleee87<br>(guillermovsvl@gmail.com)</p>
+                </div>
+                <a href="https://github.com/" target="_blank" class="btn-upload" style="background-color: #333;">Ir a GitHub</a>
+            </div>
+
+            <!-- 8. Cloudflare -->
+            <div class="action-card">
+                <div>
+                    <h3>Cloudflare</h3>
+                    <p>DNS de la página.<br><b>Usuario:</b> guillermovsvl@gmail.com</p>
+                </div>
+                <a href="https://dash.cloudflare.com/09c24be7c8ea39df682d492f402d9d24/home" target="_blank" class="btn-upload" style="background-color: #333;">Ir a Cloudflare</a>
+            </div>
+
+            <!-- 9. Vercel -->
+            <div class="action-card">
+                <div>
+                    <h3>Vercel</h3>
+                    <p>Servidor gratuito.<br><b>Usuario:</b> guillermovsvl@gmail.com</p>
+                </div>
+                <a href="https://vercel.com/account/settings" target="_blank" class="btn-upload" style="background-color: #333;">Ir a Vercel</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de Ingreso -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Ingreso Administrador</h2>
+            <input type="email" id="email" placeholder="contacto@lucianacastillo.com">
+            <input type="password" id="password" placeholder="Contraseña">
+            <!-- Botón de inicio de sesión que llama a Firebase -->
+            <button id="loginBtn" onclick="login()">Ingresar</button>
+            <p id="login-msg" style="color: red; font-size: 0.9rem; margin-top: 10px; display: none;"></p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE FIREBASE CON MODO DE DIAGNÓSTICO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -28,7 +363,7 @@
         window.onclick = function(event) { if (event.target == modal) modal.style.display = "none"; }
 
         window.login = function() {
-            var email = document.getElementById("email").value.trim(); // .trim() borra espacios accidentales
+            var email = document.getElementById("email").value.trim();
             var pass = document.getElementById("password").value;
             var msgBox = document.getElementById("login-msg");
             
@@ -46,7 +381,6 @@
                     document.getElementById("loginBtn").innerText = "Ingresar";
                 })
                 .catch((error) => {
-                    // AQUÍ ESTÁ EL CAMBIO: Ahora mostrará el error real técnico
                     msgBox.innerText = "Error técnico: " + error.code;
                     msgBox.style.display = "block";
                     document.getElementById("loginBtn").innerText = "Ingresar";
