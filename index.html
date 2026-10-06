@@ -123,4 +123,276 @@
             letter-spacing: 0.5px;
         }
         .instagram-btn:hover {
-            background-color: rgba(255, 255
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* Sección de Catálogo / Revista Digital */
+        .catalog-section {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .catalog-section h2 {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+            transition: opacity 0.3s ease;
+        }
+        .flipbook-container {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background-color: #f9f9f9;
+        }
+        .flipbook-container iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Botón Flotante de WhatsApp */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: var(--whatsapp-green);
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+        .whatsapp-float svg {
+            width: 35px;
+            height: 35px;
+            fill: currentColor;
+        }
+
+        /* Ajustes para celulares */
+        @media (max-width: 768px) {
+            .flipbook-container iframe {
+                height: 450px;
+            }
+            .whatsapp-float {
+                width: 55px;
+                height: 55px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .whatsapp-float svg {
+                width: 30px;
+                height: 30px;
+            }
+            /* Ajuste del menú en celulares para que no se amontone */
+            .nav-menu {
+                gap: 1rem;
+            }
+            .nav-menu a {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            background-color: var(--white);
+            margin: 15% auto;
+            padding: 2.5rem;
+            border-radius: 8px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .modal-content h2 {
+            color: var(--pantone-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .modal-content button {
+            background-color: var(--pantone-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .modal-content button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-spacer"></div>
+        <ul class="nav-menu">
+            <li class="dropdown">
+                <a>Catálogos ▾</a>
+                <div class="dropdown-content">
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/phfe/', 'Vestidos')">Vestidos</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/VESTIDOS-CEREMONIALES/', 'Vestidos Ceremoniales')">Vestidos Ceremoniales</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/CONJUNTOS-MANGA-CORTA/', 'Conjuntos Manga corta')">Conjuntos Manga corta</a>
+                    <a onclick="loadCatalog('https://online.fliphtml5.com/lucianacastillomoda/CONJUNTO-MANGA-LARGA/', 'Conjuntos Manga Larga')">Conjuntos Manga Larga</a>
+                </div>
+            </li>
+            
+            <!-- Nuevo botón de WhatsApp en la cabecera con el mensaje actualizado -->
+            <li>
+                <a href="https://wa.me/51933895117?text=%C2%A1Hola!%20Estoy%20interesada%20en%20realizar%20una%20compra." target="_blank" rel="noopener noreferrer" title="Contáctanos por WhatsApp">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 6px;" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                    </svg>
+                    WhatsApp
+                </a>
+            </li>
+            
+            <li>
+                <a onclick="openModal()">Administrador</a>
+            </li>
+        </ul>
+    </header>
+
+    <section class="hero">
+        <div class="logo-container">
+            <img src="logo rediseñado letras blancas sin fondo 2022.png" alt="Logo Luciana Castillo">
+        </div>
+        
+        <a href="https://www.instagram.com/lucianacastillo.moda" target="_blank" rel="noopener noreferrer" class="instagram-btn">
+            <svg viewBox="0 0 24 24" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="ig-gradient" x1="0.2" y1="0.8" x2="0.8" y2="0.2">
+                        <stop offset="0%" stop-color="#f09433" />
+                        <stop offset="25%" stop-color="#e6683c" />
+                        <stop offset="50%" stop-color="#dc2743" />
+                        <stop offset="75%" stop-color="#cc2366" />
+                        <stop offset="100%" stop-color="#bc1888" />
+                    </linearGradient>
+                </defs>
+                <rect width="24" height="24" rx="6" fill="url(#ig-gradient)"/>
+                <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="white" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3.5" fill="none" stroke="white" stroke-width="2"/>
+                <circle cx="16.5" cy="7.5" r="1.2" fill="white"/>
+            </svg>
+            @lucianacastillo.moda
+        </a>
+    </section>
+
+    <!-- Sección de Colecciones / Revista Digital Dinámica -->
+    <section id="colecciones" class="catalog-section">
+        <h2 id="catalog-title">Vestidos</h2>
+        <div class="flipbook-container">
+            <iframe id="catalog-frame" src="https://online.fliphtml5.com/lucianacastillomoda/phfe/" allowfullscreen="true"></iframe>
+        </div>
+    </section>
+
+    <!-- Botón Flotante de WhatsApp con el mensaje actualizado -->
+    <a href="https://wa.me/51933895117?text=%C2%A1Hola!%20Estoy%20interesada%20en%20realizar%20una%20compra." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Contáctanos por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <!-- Modal de Administrador -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Ingreso Administrador</h2>
+            <input type="email" id="email" placeholder="Correo electrónico">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button onclick="login()">Ingresar</button>
+        </div>
+    </div>
+
+    <script>
+        // Funciones del Menú Dinámico
+        function loadCatalog(url, title) {
+            document.getElementById('catalog-title').innerText = title;
+            document.getElementById('catalog-frame').src = url;
+            document.getElementById('colecciones').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Funciones del Modal
+        var modal = document.getElementById("adminModal");
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function login() {
+            var email = document.getElementById("email").value;
+            var pass = document.getElementById("password").value;
+            if(email && pass) {
+                alert("Validando credenciales... (Próximamente se conectará a Firebase)");
+            } else {
+                alert("Por favor, ingrese correo y contraseña.");
+            }
+        }
+    </script>
+
+</body>
+</html>
